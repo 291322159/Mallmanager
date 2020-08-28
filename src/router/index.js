@@ -5,24 +5,25 @@ import Router from 'vue-router'
 import Login from '@/views/login/Login'
 import Home from '@/views/home/Home'
 
+import Users from '@/views/home/users/Users.vue'
+
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
-    {
-      path: '/',
-      redirect: '/login',
-    },
 		{
 		  path: '/login',
 		  name: 'login',
 		  component: Login,
 		},
 		{
-			path: '/home',
+			path: '/',
 			name: 'home',
-			component: Home
+			component: Home,
+			children: [
+				{name: 'users', path: '/users', component: Users}
+			]
 		}
   ],
   mode: 'history'

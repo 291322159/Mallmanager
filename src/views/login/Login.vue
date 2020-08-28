@@ -15,7 +15,7 @@
 			<el-button 
 			type="primary" 
 			class="login-btn" 
-			@click.prevent="handLeLogin"
+			@click.prevent="handLeLogin"			
 			>登录</el-button>
     </el-form>
   </div>
