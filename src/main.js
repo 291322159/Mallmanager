@@ -10,11 +10,17 @@ import 'element-ui/lib/theme-chalk/index.css'
 import '@/assets/css/normalize.css'
 import '@/assets/css/reset.css'
 
+import myBread from '@/components/content/Bread'
+
+
 //使用vue插件
 Vue.use(ElementUI);
 Vue.use(MyServerHttp)
 
 Vue.config.productionTip = false
+
+// 全局自定义组建
+Vue.component('my-bread', myBread)
 
 
 /* eslint-disable no-new */

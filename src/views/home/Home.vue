@@ -13,7 +13,7 @@
 				</el-col>
 			</el-row>
 		</el-header>
-		
+
     <el-container>
       <el-aside width="200px" class="aside">
 				<el-menu
@@ -26,68 +26,68 @@
 				    </template>
 				    <el-menu-item index="users">
 								<i class="el-icon-menu"></i>
-								<span>用户列表</span>       
+								<span>用户列表</span>
 				    </el-menu-item>
 				  </el-submenu>
-					
+
 					<el-submenu index="2">
 						<template slot="title">
 						  <i class="el-icon-location"></i>
 						  <span>权限管理</span>
 						</template>
-					  <el-menu-item>
+					  <el-menu-item index="role">
 							<i class="el-icon-menu"></i>
-							<span index="2-1">角色列表</span>
+							<span>角色列表</span>
 						</el-menu-item>
-						<el-menu-item>
+						<el-menu-item index="rights">
 							<i class="el-icon-menu"></i>
-							<span index="2-2">权限列表</span>
+							<span>权限列表</span>
 						</el-menu-item>
 					</el-submenu>
-					
+
 					<el-submenu index="3">
 						<template slot="title">
 						  <i class="el-icon-location"></i>
 						  <span>商品管理</span>
 						</template>
-					  <el-menu-item>
+					  <el-menu-item index="goodsList">
 					  	<i class="el-icon-menu"></i>
-					  	<span index="3-1">商品列表</span>
+					  	<span>商品列表</span>
 					  </el-menu-item>
-						<el-menu-item>
+						<el-menu-item index="Params">
 							<i class="el-icon-menu"></i>
-							<span index="3-2">分类参数</span>
+							<span>分类参数</span>
 						</el-menu-item>
-						<el-menu-item>
+						<el-menu-item index="categories">
 							<i class="el-icon-menu"></i>
-							<span index="3-3">商品分类</span>
+							<span>商品分类</span>
 						</el-menu-item>
 					</el-submenu>
-					
+
 					<el-submenu index="4">
 						<template slot="title">
 						  <i class="el-icon-location"></i>
 						  <span>订单管理</span>
 						</template>
-					  <el-menu-item>
+					  <el-menu-item index="orders">
 					  	<i class="el-icon-menu"></i>
-					  	<span index="4-1">订单列表</span>
+					  	<span>订单列表</span>
 					  </el-menu-item>
 					</el-submenu>
-					
+
 					<el-submenu index="5">
 					  <template slot="title">
 					    <i class="el-icon-location"></i>
 					    <span>数据统计</span>
 					  </template>
-					  <el-menu-item>
+					  <el-menu-item index="reports">
 					  	<i class="el-icon-menu"></i>
-					  	<span index="5-1">数据列表</span>
+					  	<span>数据列表</span>
 					  </el-menu-item>
 					</el-submenu>
 				</el-menu>
 			</el-aside>
-			
+
       <el-main class="main">
 				<router-view></router-view>
 			</el-main>
@@ -96,13 +96,13 @@
 </template>
 
 <script>
-	
-	
-	
+
+
+
   export default {
     name: "home",
 		components: {
-			
+
 		},
 		methods: {
 			handleSignout() {
@@ -114,13 +114,6 @@
 				this.$router.push({ name: 'login' })
 			}
 		},
-		beforeCreate() {
-			// 判断token值,如果没有就不能进入home
-			const token = localStorage.getItem('token')			
-			if(!token) {
-				this.$router.push({name: 'login'})
-			}
-		}
   }
 </script>
 
@@ -138,7 +131,7 @@
 		background-color: #e9eef3;
 		height: 100%;
 	}
-	
+
 	.childheader{
 		height: 100%;
 		text-align: center;

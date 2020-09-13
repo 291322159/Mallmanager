@@ -36,7 +36,6 @@
 		methods: {
 			async handLeLogin() {
 				const res = await this.$http.post('login', this.formData).then(res => {
-					console.log(res)
 					const {
 						data,
 						meta:{msg, status}

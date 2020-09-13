@@ -1,13 +1,9 @@
 <template>
   <div>
-		
 		<!-- 1.面包屑 -->
-			<el-breadcrumb separator-class="el-icon-arrow-right">
-			  <el-breadcrumb-item>首页</el-breadcrumb-item>
-			  <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-			  <el-breadcrumb-item>用户列表</el-breadcrumb-item>
-			</el-breadcrumb>
-			
+		<my-bread level1="用户管理" level2="用户列表"></my-bread>
+		
+		
     <el-card class="box-card searchRow">	
 			<!-- 2.搜索栏 -->
 			<el-row>
@@ -25,7 +21,7 @@
 			
 			<!-- 3.列表 -->
 			<el-table :data="userlist" style="width: 100%">
-			  <el-table-column type="index" label="#" width="40"></el-table-column>
+			  <el-table-column type="index" label="#" width="60"></el-table-column>
 			  <el-table-column prop="username" label="姓名" width="80"></el-table-column>
 			  <el-table-column prop="email" label="邮箱"></el-table-column>
 				<el-table-column prop="mobile" label="电话"></el-table-column>
@@ -41,16 +37,17 @@
 						<el-switch
 							v-model="scope.row.mg_state"
 							active-color="#13ce66"
-							inactive-color="#ff4949">
+							inactive-color="#ff4949"
+							@change="changeMgState(scope.row)">
 						</el-switch>
 					</template>
 					
 				</el-table-column>
 				<el-table-column  label="操作">
 					<template slot-scope="scope">
-						  <el-button size="mini" plain type="primary" icon="el-icon-edit" circle></el-button>
-						  <el-button size="mini" plain type="danger" icon="el-icon-delete" circle></el-button>
-							<el-button size="mini" plain type="success" icon="el-icon-check" circle></el-button>
+						  <el-button size="mini" plain type="primary" icon="el-icon-edit" circle @click="showEditUserDia(scope.row)"></el-button>
+						  <el-button size="mini" plain type="danger" icon="el-icon-delete" circle @click="showDelMsgbox(scope.row.id)"></el-button>
+							<el-button size="mini" plain type="success" icon="el-icon-check" circle @click="showSetUserRoleDia(scope.row)"></el-button>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -71,8 +68,7 @@
 		
 		
 		<!-- 对话框 -->
-		<!-- 添加用户的对话框 -->
-		
+		<!-- 添加用户的对话框 -->		
 		<el-dialog title="添加用户" :visible.sync="dialogFormVisibleAdd">
 		  <el-form :model="form">
 		    <el-form-item label="用户名" label-width="60px">
@@ -94,8 +90,43 @@
 		  </div>
 		</el-dialog>
 		
+		<!-- 编辑用户的对话框 -->
+		<el-dialog title="编辑用户" :visible.sync="dialogFormVisibleEdit">
+		  <el-form :model="form">
+		    <el-form-item label="用户名" label-width="60px">
+		      <el-input v-model="form.username" autocomplete="off" disabled></el-input>
+		    </el-form-item>
+				<el-form-item label="邮箱" label-width="60px">
+				  <el-input v-model="form.email" autocomplete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="电话" label-width="60px">
+				  <el-input v-model="form.mobile" autocomplete="off"></el-input>
+				</el-form-item>
+		  </el-form>
+		  <div slot="footer" class="dialog-footer">
+		    <el-button @click="dialogFormVisibleEdit = false">取 消</el-button>
+		    <el-button type="primary" @click="EditUser()">确 定</el-button>
+		  </div>
+		</el-dialog>
 		
-		
+		<!-- 分配角色的对话框 -->
+		<el-dialog title="分配角色" :visible.sync="dialogFormVisibleRol">
+		  <el-form :model="form">
+		    <el-form-item label="用户名" label-width="60px">{{currUsername}}</el-form-item>
+		      
+		    
+		    <el-form-item label="角色" label-width="60px">{{currRoleId}}
+		      <el-select v-model="currRoleId">
+		        <el-option label="请选择" :value="-1"></el-option>
+		        <el-option :label="item.roleName" :value="item.id" v-for="(item, index) in roles" :key="index"></el-option>
+		      </el-select>
+		    </el-form-item>
+		  </el-form>
+		  <div slot="footer" class="dialog-footer">
+		    <el-button @click="dialogFormVisibleRol = false">取 消</el-button>
+		    <el-button type="primary" @click="RolUser()">确 定</el-button>
+		  </div>
+		</el-dialog>
 		
   </div>
 </template>
@@ -120,19 +151,30 @@
 				
 				// 添加对话框的属性
 				dialogFormVisibleAdd: false,
+				// 编辑对话框的属性
+				dialogFormVisibleEdit: false,
+				// 分配对话框的属性
+				dialogFormVisibleRol: false,
+				// 分配角色
+				currRoleId: -1,
+				currUsername: '',
+				roles: [],
+				currUserId: -1,
 				// 添加用户的表单数据
-				 form: {},
+				form: {
+					 username: {},
+					 password: {},
+					 email: {},
+					 mobile: {}
+				},
+				
 			}
 		},
 		created() {
 			this.getUserList()
 		},
 		methods: {
-			async getUserList() {				
-				// 需要授权的 API ,必须在请求头中使用 Authorization 字段提供 token 令牌
-				const AUTH_TOKEN = localStorage.getItem('token')
-				this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN
-				
+			async getUserList() {							
 				const {data: res} = await this.$http.get('users', {
 					 params: this.queryInfo 
 				})
@@ -148,33 +190,40 @@
 				}
 			},
 			
+			// 修改用户状态
+			async changeMgState(user) {
+				const res = await this.$http.put('users/' + user.id + '/state/' + user.mg_state)
+				this.$message.success(res.data.meta.msg)
+			},
+			
 			// 分页相关的方法
 			handleSizeChange(val) {
-				console.log(`每页${val}条`)
 				this.queryInfo.pagesize = val
 				this.queryInfo.pagenum = 1
 				this.getUserList()
 			},
 			handleCurrentChange(val) {
-				console.log(`当前页：${val}`)
 				this.queryInfo.pagenum = val
 				this.getUserList()
 			},
+			
 			// 搜索用户
 			searchUser() {
 				this.getUserList()
 			},
+			
 			// 清空搜索框,重新获取数据
 			loadUserList() {
 				this.getUserList()
 			},
-			// 添加用户
+			
+			// 添加用户 - 打开对话框
 			showAddUserDia() {
 				this.dialogFormVisibleAdd = true
-			},
+				this.form = {}
+			},			
 			// 添加用户 - 发送请求
-			async addUser() {
-				
+			async addUser() {				
 				const res = await this.$http.post('users', this.form)
 				// const {meta: {status, msg}, data} = res.data
 				if(res.data.meta.status === 201) {
@@ -192,6 +241,73 @@
 					// 清空文本框
 					this.form = {}
 				}
+			},
+			
+			// 删除用户 - 打开消息盒子()
+			showDelMsgbox(userId) {
+				this.$confirm('删除用户?', '提示', {
+				  confirmButtonText: '确定',
+				  cancelButtonText: '取消',
+				  type: 'warning'
+				}).then(async () => {
+					// 发送删除请求					
+					const res = await this.$http.delete('users/' + userId)
+					if(res.data.meta.status === 200) {
+						// 更新列表,回到第一页
+						this.queryInfo.pagenum = 1
+						this.getUserList()
+						// 提示
+						this.$message({
+							type: 'success',
+							message: '删除成功!'
+						})
+					}
+				}).catch(() => {
+				  this.$message({
+				    type: 'info',
+				    message: '已取消删除'
+				  })       
+				})
+			},
+			
+			// 编辑用户 - 打开对话框
+			showEditUserDia(user) {
+				this.form = user
+				this.dialogFormVisibleEdit = true
+
+			},
+			// 编辑用户 - 发送请求
+			async EditUser() {
+				const res = await this.$http.put('users/' + this.form.id, this.form)
+				if(res.data.meta.status === 200) {
+					this.$message.success(res.data.meta.msg)
+					this.dialogFormVisibleEdit = false
+				}else {
+					this.$message.success(res.data.meta.msg)
+				}				
+			},
+			
+			// 分配角色 - 打开对话框
+			async showSetUserRoleDia(user) {
+				this.currUsername = user.username
+				// 获取用户的id
+				this.currUserId = user.id
+				// 获取所有的角色
+				const res = await this.$http.get('roles/')
+				this.roles = res.data.data
+				// 获取当前用的角色id
+				const res1 = await this.$http.put('users/' + user.id)
+				this.currRoleId = res1.data.data.role_id
+        
+				this.dialogFormVisibleRol = true
+			},
+			// 分配角色 - 发送请求
+			async RolUser() {
+				const res = await this.$http.put('users/' + this.currUserId + '/role', {
+					rid: this.currRoleId
+				})
+        this.getUserList()
+				this.dialogFormVisibleRol = false
 			}
 		},
 		filters: {
@@ -208,9 +324,6 @@
 </script>
 
 <style scoped>
-	.searchRow {
-		margin-top: 25px;
-	}
   .inputSearch{
 		width: 300px;
 	}
