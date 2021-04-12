@@ -14,6 +14,7 @@ import Params from '@/views/home/goods/Params'
 import Categories from '@/views/home/goods/Categories'
 import Orders from '@/views/home/orders/Orders'
 import Reports from '@/views/home/reports/Reports'
+import Screen from '@/views/home/screen/Screen'
 
 
 Vue.use(Router)
@@ -29,6 +30,7 @@ Vue.use(Router)
 			path: '/',
 			name: 'home',
 			component: Home,
+			redirect: '/users',
 			children: [
 				{name: 'users', path: '/users', component: Users},
 				{name: 'rights', path: '/rights', component: Rights},
@@ -39,8 +41,15 @@ Vue.use(Router)
 				{name: 'goodsadd', path: '/goods/goodsadd', component: GoodsAdd},
 				{name: 'orders', path: 'orders', component: Orders},
 				{name: 'reports', path: '/reports', component: Reports},
+				// {name: 'screen', path: '/screen', component: Screen},
 			]
 		},
+		{
+			name: 'screen', 
+			path: '/screen', 
+			component: Screen
+		},
+
   ],
   mode: 'history'
 })

@@ -12,6 +12,8 @@ import '@/assets/css/reset.css'
 
 import myBread from '@/components/content/Bread'
 
+import echarts from 'echarts'
+Vue.prototype.$echarts = echarts
 
 //使用vue插件
 Vue.use(ElementUI);

@@ -28,8 +28,8 @@
 		  return {
 		    labelPosition: 'top',
 		    formData: {
-		      username: '',
-		      password: '',
+		      username: '', //admin	
+		      password: '', //123456
 		    }
 		  }
 		},
@@ -46,6 +46,7 @@
 						// 0.保存token
 						// 保存正确用户的token
 						localStorage.setItem('token', data.token)
+						localStorage.setItem('userName', data.username)
 						// 1.跳转 home 页面
 						this.$router.push({name: 'home'})
 						// 2.登录成功提示

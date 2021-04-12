@@ -49,6 +49,11 @@
         <el-button type="primary" @click="addOrders">确 定</el-button>
       </div>
     </el-dialog>
+    <div id="box">
+      <el-input  placeholder="请输入内容"></el-input>
+    </div>
+    <el-button @click="btn(true)">增加高度{{this.height}}</el-button>
+    <el-button @click="btn(false)">减少高度{{this.height}}</el-button>
   </div>
 </template>
 
@@ -66,7 +71,8 @@
           address: ''
         },
         catlist: [],
-        selectedOptions: []
+        selectedOptions: [],
+        height: 40,
       }
     },
     created() {
@@ -86,6 +92,10 @@
       // 打开对话框 - 提交数据
       addOrders() {
         this.dialogFormVisible = false
+      },
+      btn(flag) {
+        flag ? this.height++ : this.height--
+        document.querySelector('#box').children[0].children[0].style.height = this.height + 'px'
       }
     },
     filters: {

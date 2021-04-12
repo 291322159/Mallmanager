@@ -9,6 +9,7 @@ MyHttpServer.install = Vue => {
 
 	axios.defaults.baseURL = 'http://www.ysqorz.top:8888/api/private/v1/'
 	// axios.defaults.baseURL = 'https://www.liulongbin.top:8888/api/private/v1/'
+	// axios.defaults.baseURL = 'http://120.53.120.229:8888/api/private/v1/'
 
 	axios.interceptors.request.use(function (config) {
 		// 在请求发起之前 设置头部
